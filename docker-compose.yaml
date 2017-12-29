@@ -1,0 +1,32 @@
+version: '3'
+services:
+  nginx-proxy:
+    build: ./nginx
+    ports:
+      - '8443:8443'
+      - '7443:7443'
+      - '5000:5000'
+    links:
+      - nexus-repository
+      - iq-server
+    command: [ nginx, '-g', 'daemon off;' ]
+    container_name: nginx-proxy
+
+  iq-server:
+    #build: iq-server
+    volumes:
+      - ~/iq-data:/sonatype-work
+    ports:
+      - "8070:8070"
+      - "8071:8071"
+    image: sonatype/nexus-iq-server
+    container_name: iq-server
+
+  nexus-repository:
+    image: sonatype/nexus3
+    ports:
+      - "8081:8081"
+      - "18443:18443"
+    volumes:
+      - '~/nexus-data:/nexus-data'
+    container_name: nexus3
